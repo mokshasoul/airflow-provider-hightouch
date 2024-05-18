@@ -1,3 +1,7 @@
+"""
+This module contains utility functions for the Hightouch provider.
+"""
+
 from typing import Type
 
 from dateutil import parser
@@ -6,6 +10,16 @@ from .types import SyncRunParsedOutput
 
 
 def parse_sync_run_details(sync_run_details) -> Type[SyncRunParsedOutput]:
+    """
+    Parses the sync run details and returns an instance of SyncRunParsedOutput.
+
+    Args:
+        sync_run_details (dict): The sync run details to be parsed.
+
+    Returns:
+        SyncRunParsedOutput: An instance of SyncRunParsedOutput containing the parsed details.
+
+    """
     x = SyncRunParsedOutput
 
     x.created_at = None
@@ -44,6 +58,16 @@ def parse_sync_run_details(sync_run_details) -> Type[SyncRunParsedOutput]:
 
 
 def generate_metadata_from_parsed_run(parsed_output: SyncRunParsedOutput):
+    """
+    Generate metadata from the parsed run.
+
+    Args:
+        parsed_output (SyncRunParsedOutput): The parsed output of the run.
+
+    Returns:
+        dict: A dictionary containing the generated metadata.
+
+    """
     return {
         "elapsed_seconds": parsed_output.elapsed_seconds or 0,
         "planned_add": parsed_output.planned_add,

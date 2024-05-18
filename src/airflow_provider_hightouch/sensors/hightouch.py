@@ -1,22 +1,15 @@
-from typing import Optional
-
-from airflow.models.baseoperator import BaseOperatorLink
-from airflow.sensors.base import BaseSensorOperator
 
 from airflow.exceptions import AirflowException
-from airflow.utils.decorators import apply_defaults
+from airflow.sensors.base import BaseSensorOperator
 
+from airflow_provider_hightouch.consts import SUCCESS, TERMINAL_STATUSES, WARNING
 from airflow_provider_hightouch.hooks.hightouch import HightouchHook
 from airflow_provider_hightouch.utils import parse_sync_run_details
 
-from airflow_provider_hightouch.consts import *
+from typing import TYPE_CHECKING
 
-
-class HightouchLink(BaseOperatorLink):
-    name = "Hightouch"
-
-    def get_link(self, operator, dttm):
-        return "https://app.hightouch.io"
+if TYPE_CHECKING:
+    from airflow_provider_hightouch.types import SyncRunParsedOutput
 
 
 class HightouchSyncRunSensor(BaseSensorOperator):
@@ -39,9 +32,6 @@ class HightouchSyncRunSensor(BaseSensorOperator):
     :type error_on_warning: bool
     """
 
-    operator_extra_links = (HightouchLink(),)
-
-    @apply_defaults
     def __init__(
         self,
         sync_run_id: str,
@@ -69,7 +59,7 @@ class HightouchSyncRunSensor(BaseSensorOperator):
             self.sync_run_id
         )[0]
 
-        run = parse_sync_run_details(
+        run: SyncRunParsedOutput = parse_sync_run_details(
             sync_run_details
         )
 

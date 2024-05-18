@@ -1,18 +1,12 @@
+"""Hightouch Operator to execute a sync run."""
+
 from typing import Optional
 
 from airflow.exceptions import AirflowException
-from airflow.models import BaseOperator, BaseOperatorLink
-from airflow.utils.decorators import apply_defaults
+from airflow.models import BaseOperator
 
 from airflow_provider_hightouch.hooks.hightouch import HightouchHook
 from airflow_provider_hightouch.utils import parse_sync_run_details
-
-
-class HightouchLink(BaseOperatorLink):
-    name = "Hightouch"
-
-    def get_link(self, operator, dttm):
-        return "https://app.hightouch.io"
 
 
 class HightouchTriggerSyncOperator(BaseOperator):
@@ -41,11 +35,9 @@ class HightouchTriggerSyncOperator(BaseOperator):
     :type timeout: int
     """
 
-    operator_extra_links = (HightouchLink(),)
-
-    @apply_defaults
     def __init__(
         self,
+        *,
         sync_id: Optional[str] = None,
         sync_slug: Optional[str] = None,
         connection_id: str = "hightouch_default",
@@ -95,8 +87,9 @@ class HightouchTriggerSyncOperator(BaseOperator):
                 self.log.info(dict(parsed_result))
                 return parsed_result.id
             except Exception:
-                self.log.warning("Sync ran successfully but failed to parse output.")
-                self.log.warning(hightouch_output)
+                self.log.exception("Sync ran successfully but failed to parse output.")
+                self.log.exception(hightouch_output)
+                return None
 
         else:
             self.log.info("Start async request to run a sync.")

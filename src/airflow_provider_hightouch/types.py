@@ -1,3 +1,4 @@
+"""Custom types for the Hightouch provider."""
 from collections import namedtuple
 from typing import Any, Dict, NamedTuple
 
