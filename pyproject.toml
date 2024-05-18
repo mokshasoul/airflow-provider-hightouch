@@ -1,9 +1,38 @@
 [build-system]
-requires = [
-    "setuptools>=42",
-    "wheel"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "airflow-provider-hightouch"
+dynamic = ["version"]
+description = "Hightouch Provider for Airflow"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+authors = [
+    { name = "Hightouch", email = "pedram@hightouch.io" },
+    { name = "Charis-Nicolas Georgiou", email = "charis@elegantsolutions.eu" },
 ]
-build-backend = "setuptools.build_meta"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+]
+dependencies = ["apache-airflow >= 2.6.3", "requests"]
+
+[project.entry-points.apache_airflow_provider]
+provider_info = "airflow_provider_hightouch:get_provider_info"
+
+[project.urls]
+"Bug Tracker" = "https://github.com/hightouchio/airflow-provider-hightouch/issues"
+Homepage = "https://github.com/hightouchio/airflow-provider-hightouch"
+
+[tool.hatch.version]
+path = "airflow_provider_hightouch/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = ["/airflow_provider_hightouch"]
 
 [tool.isort]
 multi_line_output = 3
