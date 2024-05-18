@@ -1,11 +1,16 @@
+"""
+Hightouch Hook for Airflow
+"""
+
 import datetime
-import json
 import time
 from typing import Any, Dict, List, Optional
 from urllib.parse import urljoin
 
 from airflow.exceptions import AirflowException
+from airflow.providers.http.hooks.http import HttpHook
 
+from airflow_provider_hightouch import __version__, utils
 from airflow_provider_hightouch.consts import (
     DEFAULT_POLL_INTERVAL,
     HIGHTOUCH_API_BASE_V3,
@@ -15,13 +20,6 @@ from airflow_provider_hightouch.consts import (
     WARNING,
 )
 from airflow_provider_hightouch.types import HightouchOutput
-
-try:
-    from airflow.providers.http.hooks.http import HttpHook
-except ImportError:
-    from airflow.hooks.http_hook import HttpHook
-
-from airflow_provider_hightouch import __version__, utils
 
 
 class HightouchHook(HttpHook):
@@ -143,20 +141,21 @@ class HightouchHook(HttpHook):
         """Trigger a sync and initiate a sync run
         Args:
             sync_id (str): The Hightouch Sync ID.
+            sync_slug (str): The Hightouch Sync Slug.
         Returns:
             str: The sync request ID created by the Hightouch API.
         """
-        if sync_id:
-            return self.make_request(
-                method="POST", endpoint="syncs/trigger", data={"syncId": sync_id}
-            )["id"]
-        if sync_slug:
-            return self.make_request(
-                method="POST", endpoint="syncs/trigger", data={"syncSlug": sync_slug}
-            )["id"]
-        raise AirflowException(
-            "One of sync_id or sync_slug must be provided to trigger a sync."
-        )
+        # Fail early
+        if not sync_id and not sync_slug:
+            raise AirflowException(
+                "One of sync_id or sync_slug must be provided to trigger a sync."
+            )
+
+        return self.make_request(
+            method="POST",
+            endpoint="syncs/trigger",
+            data={"syncId": sync_id, "syncSlug": sync_slug},
+        )["id"]
 
     def poll_sync(
         self,
