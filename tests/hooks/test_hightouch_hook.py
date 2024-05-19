@@ -11,10 +11,9 @@ Run test:
 
 import unittest
 from unittest import mock
+import json
 
-import pytest
 import requests_mock
-from airflow import AirflowException
 
 from airflow_provider_hightouch.hooks.hightouch import HightouchHook
 
@@ -57,12 +56,21 @@ def sync_details_payload():
 
 @mock.patch.dict(
     "os.environ",
-    AIRFLOW_CONN_HIGHTOUCH_DEFAULT='{ "conn_type": "https", "host": "test.hightouch.io", "schema": "https"}',
+    AIRFLOW_CONN_HIGHTOUCH_DEFAULT=json.dumps(
+        {
+            "conn_type": "https",
+            "host": "test.hightouch.io",
+            "schema": "https",
+        }
+    ),
 )
 class TestHightouchHook(unittest.TestCase):
+    """
+    Unit tests for the HightouchHook class.
+    """
+
     @requests_mock.mock()
     def test_hightouch_get_sync_status(self, requests_mock):
-
         requests_mock.get(
             "https://test.hightouch.io/api/v1/syncs/1",
             json=sync_details_payload(),
@@ -73,18 +81,14 @@ class TestHightouchHook(unittest.TestCase):
 
     @requests_mock.mock()
     def test_hightouch_submit_sync_with_id(self, requests_mock):
-        requests_mock.post(
-            "https://test.hightouch.io/api/v1/syncs/trigger", json={"id": "123"}
-        )
+        requests_mock.post("https://test.hightouch.io/api/v1/syncs/trigger", json={"id": "123"})
         hook = HightouchHook()
         response = hook.start_sync(sync_id=100)
         assert response == "123"
 
     @requests_mock.mock()
     def test_hightouch_submit_sync_with_slug(self, requests_mock):
-        requests_mock.post(
-            "https://test.hightouch.io/api/v1/syncs/trigger", json={"id": "123"}
-        )
+        requests_mock.post("https://test.hightouch.io/api/v1/syncs/trigger", json={"id": "123"})
         hook = HightouchHook()
         response = hook.start_sync(sync_slug="boo")
         assert response == "123"

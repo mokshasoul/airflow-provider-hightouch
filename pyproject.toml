@@ -24,7 +24,14 @@ dependencies = ["apache-airflow >= 2.6.3", "requests"]
 
 [project.optional-dependencies]
 test = ["pytest >= 8.2.0", "requests_mock >= 1.12.1"]
-dev = ["ruff>=0.4.4", "pylint>=3.2.0", "mypy>=1.10.0"]
+dev = [
+    "airflow-provider-hightouch[test]",
+    "ruff>=0.4.4",
+    "pylint>=3.2.0",
+    "mypy>=1.10.0",
+    "pendulum==2.0.0",
+    "apache-airflow==2.6.3",
+]
 
 [project.entry-points.apache_airflow_provider]
 provider_info = "airflow_provider_hightouch:get_provider_info"
@@ -36,19 +43,12 @@ Homepage = "https://github.com/hightouchio/airflow-provider-hightouch"
 [tool.hatch.version]
 path = "src/airflow_provider_hightouch/version.py"
 
-[tool.hatch.env]
-
-requires = ["hatch-pip-compile"]
-
 [tool.hatch.envs.default]
-installer = "uv"
-type = "pip-compile"
-pip-compile-resolver = "uv"
-pip-compile-args = ["--resolution=lowest-direct"]
+python = "3.11"
+
 [tool.hatch.envs.dev]
 python = "3.11"
-skip_install = true
-features = ["dev", "test"]
+features = ["dev"]
 
 
 [tool.ruff]
@@ -83,10 +83,10 @@ exclude = [
 ]
 
 # Same as Black.
-line-length = 88
+line-length = 100
 indent-width = 4
 
-# Assume Python 3.8
+# Assume Python 3.11
 target-version = "py311"
 
 [tool.ruff.lint]
@@ -434,7 +434,7 @@ indent-after-paren = 4
 indent-string = "    "
 
 # Maximum number of characters on a single line.
-max-line-length = 80
+max-line-length = 100
 
 # Maximum number of lines in a module.
 max-module-lines = 99999
@@ -636,10 +636,6 @@ max-nested-blocks = 5
 # return-statements if a never returning function is called then it will be
 # considered as an explicit return statement and no message will be printed.
 never-returning-functions = ["sys.exit", "argparse.parse_error"]
-
-# Let 'consider-using-join' be raised when the separator to join on would be non-
-# empty (resulting in expected fixes of the type: ``"- " + " - ".join(items)``)
-suggest-join-with-non-empty-separator = true
 
 [tool.pylint.reports]
 # Python expression which should return a score less than or equal to 10. You

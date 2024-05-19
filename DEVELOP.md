@@ -2,13 +2,13 @@
 
 ### Prerequisities
 
-You will need Airflow installed. One way to do this is to use 
-[pyenv](https://github.com/pyenv/pyenv) and 
+You will need Airflow installed. One way to do this is to use
+[pyenv](https://github.com/pyenv/pyenv) and
 [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv) to create a virtual environment.
 
 
 
-```
+```shell
 mkdir -p ~/airflow
 cd ~/airflow
 pyenv virtualenv airflow
@@ -18,7 +18,7 @@ pip install apache-airflow
 
 Once installed, you can install this pacakge locally.
 
-```
+```shell
 cd ~/projects
 git clone git@github.com:hightouchio/airflow-provider-hightouch.git
 cd airflow-provider-hightouch
@@ -29,7 +29,7 @@ pip install -e .
 ```
 
 Next, spin up Airflow. Make sure to set AIRFLOW_HOME to the directory you used
-for your virtual environment, then copy the example dag over and start Airflow 
+for your virtual environment, then copy the example dag over and start Airflow
 test server
 
 ```
@@ -37,7 +37,7 @@ cd ~/airflow
 export AIRFLOW_HOME=~/airflow
 
 # Don't load example dags by default
-export AIRFLOW__CORE__LOAD_EXAMPLES=false 
+export AIRFLOW__CORE__LOAD_EXAMPLES=false
 
 # Copy the example dag over
 mkdir -p ~/airflow/dags

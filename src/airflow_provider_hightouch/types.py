@@ -1,5 +1,6 @@
 """Custom types for the Hightouch provider."""
-from collections import namedtuple
+
+import datetime as dt
 from typing import Any, Dict, NamedTuple
 
 
@@ -24,26 +25,31 @@ class HightouchOutput(
     """
 
 
-SyncRunParsedOutput = namedtuple(
-    "_SyncRunParsedOutput",
-    [
-        "id",
-        "created_at",
-        "started_at",
-        "finished_at",
-        "elapsed_seconds",
-        "planned_add",
-        "planned_change",
-        "planned_remove",
-        "successful_add",
-        "successful_change",
-        "successful_remove",
-        "failed_add",
-        "failed_change",
-        "failed_remove",
-        "query_size",
-        "status",
-        "completion_ratio",
-        "error",
-    ],
-)
+class SyncRunParsedOutput(
+    NamedTuple(
+        "_SyncRunParsedOutput",
+        [
+            ("id", int),
+            ("created_at", dt.datetime),
+            ("started_at", dt.datetime),
+            ("finished_at", dt.datetime),
+            ("elapsed_seconds", int),
+            ("planned_add", int),
+            ("planned_change", int),
+            ("planned_remove", int),
+            ("successful_add", int),
+            ("successful_change", int),
+            ("successful_remove", int),
+            ("failed_add", int),
+            ("failed_change", int),
+            ("failed_remove", int),
+            ("query_size", int),
+            ("status", str),
+            ("completion_ratio", str),
+            ("error", str),
+        ],
+    )
+):
+    """
+    Contains parsed information about a Hightouch sync run.
+    """

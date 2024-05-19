@@ -20,7 +20,7 @@ def parse_sync_run_details(sync_run_details) -> Type[SyncRunParsedOutput]:
         SyncRunParsedOutput: An instance of SyncRunParsedOutput containing the parsed details.
 
     """
-    x = SyncRunParsedOutput
+    x = SyncRunParsedOutput()
 
     x.created_at = None
     x.started_at = None

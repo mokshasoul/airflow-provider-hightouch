@@ -22,6 +22,10 @@ from airflow_provider_hightouch.operators.hightouch import HightouchTriggerSyncO
     AIRFLOW_CONN_HIGHTOUCH_DEFAULT="http://https%3A%2F%2Ftest.hightouch.io%2F",
 )
 class TestHightouchOperator(unittest.TestCase):
+    """
+    Unit tests for the HightouchOperator class.
+    """
+
     @requests_mock.mock()
     def test_hightouch_operator(self, requests_mock):
         requests_mock.get(
