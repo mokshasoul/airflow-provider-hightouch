@@ -51,7 +51,9 @@ class HightouchTriggerSyncOperator(BaseOperator):
         self.hightouch_conn_id = connection_id
         self.api_version = api_version
         if not sync_id and not sync_slug:
-            raise ValueError("One of sync_id or sync_slug must be provided to trigger a sync")
+            raise ValueError(
+                "One of sync_id or sync_slug must be provided to trigger a sync"
+            )
         self.sync_id = sync_id
         self.sync_slug = sync_slug
         self.error_on_warning = error_on_warning
@@ -70,8 +72,12 @@ class HightouchTriggerSyncOperator(BaseOperator):
             self.log.info("Start async request to run a sync.")
             request_id = hook.start_sync(self.sync_id, self.sync_slug)
             sync = self.sync_id or self.sync_slug
-            self.log.info("Successfully created request %s to start sync: %s", request_id, sync)
-            return request_id
+            self.log.info(
+                "Successfully created request %s to start sync: %s", request_id, sync
+            )
+            return hook.get_sync_run_details(
+                sync_id=self.sync_id, sync_request_id=request_id
+            )
 
         self.log.info("Start synchronous request to run a sync.")
         hightouch_output = hook.sync_and_poll(

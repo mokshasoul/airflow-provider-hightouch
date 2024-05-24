@@ -1,3 +1,10 @@
+"""
+Sensors for hightouch
+"""
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from airflow.exceptions import AirflowException
 from airflow.sensors.base import BaseSensorOperator
@@ -6,9 +13,9 @@ from airflow_provider_hightouch.consts import SUCCESS, TERMINAL_STATUSES, WARNIN
 from airflow_provider_hightouch.hooks.hightouch import HightouchHook
 from airflow_provider_hightouch.utils import parse_sync_run_details
 
-from typing import TYPE_CHECKING
-
 if TYPE_CHECKING:
+    from airflow.utils.context import Context
+
     from airflow_provider_hightouch.types import SyncRunParsedOutput
 
 
@@ -34,6 +41,7 @@ class HightouchSyncRunSensor(BaseSensorOperator):
 
     def __init__(
         self,
+        *,
         sync_run_id: str,
         sync_id: str,
         connection_id: str = "hightouch_default",
@@ -48,20 +56,15 @@ class HightouchSyncRunSensor(BaseSensorOperator):
         self.sync_id = sync_id
         self.error_on_warning = error_on_warning
 
-    def poke(self, context) -> bool:
+    def poke(self, context: Context) -> bool:
         hook = HightouchHook(
             hightouch_conn_id=self.hightouch_conn_id,
             api_version=self.api_version,
         )
 
-        sync_run_details = hook.get_sync_run_details(
-            self.sync_id,
-            self.sync_run_id
-        )[0]
+        sync_run_details = hook.get_sync_run_details(self.sync_id, self.sync_run_id)[0]
 
-        run: SyncRunParsedOutput = parse_sync_run_details(
-            sync_run_details
-        )
+        run: SyncRunParsedOutput = parse_sync_run_details(sync_run_details)
 
         if run.status in TERMINAL_STATUSES:
             self.log.info(f"Sync request status: {run.status}.")
@@ -73,7 +76,8 @@ class HightouchSyncRunSensor(BaseSensorOperator):
             if run.status == WARNING and not self.error_on_warning:
                 return True
             raise AirflowException(
-                f"Sync {self.sync_id} for request: {self.sync_request_id} failed with status: "
+                f"Sync {self.sync_id} for request: "
+                "{self.sync_request_id} failed with status: "
                 f"{run.status} and error:  {run.error}"
             )
 

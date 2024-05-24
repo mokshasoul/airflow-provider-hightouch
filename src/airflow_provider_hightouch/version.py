@@ -1,6 +1,7 @@
 """
 Version module for the package.
 """
+
 import os
 import sys
 

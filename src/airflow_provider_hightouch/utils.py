@@ -6,7 +6,7 @@ from typing import Type
 
 from dateutil import parser
 
-from .types import SyncRunParsedOutput
+from airflow_provider_hightouch.types import SyncRunParsedOutput
 
 
 def parse_sync_run_details(sync_run_details) -> Type[SyncRunParsedOutput]:
@@ -17,7 +17,8 @@ def parse_sync_run_details(sync_run_details) -> Type[SyncRunParsedOutput]:
         sync_run_details (dict): The sync run details to be parsed.
 
     Returns:
-        SyncRunParsedOutput: An instance of SyncRunParsedOutput containing the parsed details.
+        SyncRunParsedOutput: An instance of
+            SyncRunParsedOutput containing the parsed details.
 
     """
     x = SyncRunParsedOutput()

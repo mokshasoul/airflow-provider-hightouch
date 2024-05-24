@@ -1,5 +1,6 @@
 from airflow.models import BaseOperatorLink
 
+
 class HightouchLink(BaseOperatorLink):
     name = "Hightouch"
 

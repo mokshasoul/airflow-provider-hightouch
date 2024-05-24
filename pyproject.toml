@@ -82,8 +82,7 @@ exclude = [
     "venv",
 ]
 
-# Same as Black.
-line-length = 88
+line-length = 100
 indent-width = 4
 
 # Assume Python 3.11
@@ -434,7 +433,7 @@ indent-after-paren = 4
 indent-string = "    "
 
 # Maximum number of characters on a single line.
-max-line-length = 88
+max-line-length = 100
 
 # Maximum number of lines in a module.
 max-module-lines = 99999

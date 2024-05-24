@@ -100,7 +100,9 @@ class HightouchHook(HttpHook):
 
         raise AirflowException("Exceeded max number of retries.")
 
-    def get_sync_run_details(self, sync_id: str, sync_request_id: str) -> List[Dict[str, Any]]:
+    def get_sync_run_details(
+        self, sync_id: str, sync_request_id: str
+    ) -> List[Dict[str, Any]]:
         """Get details about a given sync run from the Hightouch API.
         Args:
             sync_id (str): The Hightouch Sync ID.
@@ -109,7 +111,9 @@ class HightouchHook(HttpHook):
             Dict[str, Any]: Parsed json data from the response
         """
         params = {"runId": sync_request_id}
-        return self.make_request(method="GET", endpoint=f"syncs/{sync_id}/runs", data=params)
+        return self.make_request(
+            method="GET", endpoint=f"syncs/{sync_id}/runs", data=params
+        )
 
     def get_sync_details(self, sync_id: str) -> Dict[str, Any]:
         """Get details about a given sync from the Hightouch API.
@@ -127,9 +131,13 @@ class HightouchHook(HttpHook):
         Returns:
             Dict[str, Any]: Parsed json data from the response
         """
-        return self.make_request(method="GET", endpoint="syncs", data={"slug": sync_slug})[0]["id"]
+        return self.make_request(
+            method="GET", endpoint="syncs", data={"slug": sync_slug}
+        )[0]["id"]
 
-    def start_sync(self, sync_id: Optional[str] = None, sync_slug: Optional[str] = None) -> str:
+    def start_sync(
+        self, sync_id: Optional[str] = None, sync_slug: Optional[str] = None
+    ) -> str:
         """Trigger a sync and initiate a sync run
         Args:
             sync_id (str): The Hightouch Sync ID.
@@ -144,7 +152,9 @@ class HightouchHook(HttpHook):
             )
 
         return self.make_request(
-            method="POST", endpoint="syncs/trigger", data={"syncId": sync_id, "syncSlug": sync_slug}
+            method="POST",
+            endpoint="syncs/trigger",
+            data={"syncId": sync_id, "syncSlug": sync_slug},
         )["id"]
 
     def poll_sync(
@@ -198,8 +208,10 @@ class HightouchHook(HttpHook):
                     sync_id,
                     sync_request_id,
                 )
-            if poll_timeout and datetime.datetime.now() > poll_start + datetime.timedelta(
-                seconds=poll_timeout
+            if (
+                poll_timeout
+                and datetime.datetime.now()
+                > poll_start + datetime.timedelta(seconds=poll_timeout)
             ):
                 raise AirflowException(
                     f"Sync {sync_id} for request: {sync_request_id}' time out after "

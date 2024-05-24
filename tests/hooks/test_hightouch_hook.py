@@ -81,14 +81,18 @@ class TestHightouchHook(unittest.TestCase):
 
     @requests_mock.mock()
     def test_hightouch_submit_sync_with_id(self, requests_mock):
-        requests_mock.post("https://test.hightouch.io/api/v1/syncs/trigger", json={"id": "123"})
+        requests_mock.post(
+            "https://test.hightouch.io/api/v1/syncs/trigger", json={"id": "123"}
+        )
         hook = HightouchHook()
         response = hook.start_sync(sync_id=100)
         assert response == "123"
 
     @requests_mock.mock()
     def test_hightouch_submit_sync_with_slug(self, requests_mock):
-        requests_mock.post("https://test.hightouch.io/api/v1/syncs/trigger", json={"id": "123"})
+        requests_mock.post(
+            "https://test.hightouch.io/api/v1/syncs/trigger", json={"id": "123"}
+        )
         hook = HightouchHook()
         response = hook.start_sync(sync_slug="boo")
         assert response == "123"

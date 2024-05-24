@@ -1,4 +1,5 @@
 """Constants for the Hightouch API."""
+
 SUCCESS = "success"
 WARNING = "warning"
 CANCELLED = "cancelled"
