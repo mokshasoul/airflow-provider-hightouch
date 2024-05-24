@@ -1,4 +1,5 @@
-from .version import __version__
+"""Airflow provider for Hightouch."""
+from airflow_provider_hightouch.version import __version__
 
 
 def get_provider_info():

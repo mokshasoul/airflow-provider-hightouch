@@ -1,6 +1,6 @@
 """Hightouch Operator to execute a sync run."""
 
-from typing import Optional
+from __future__ import annotations
 
 from airflow.models.baseoperator import BaseOperator
 
@@ -37,8 +37,8 @@ class HightouchTriggerSyncOperator(BaseOperator):
     def __init__(
         self,
         *,
-        sync_id: Optional[str] = None,
-        sync_slug: Optional[str] = None,
+        sync_id: str | None = None,
+        sync_slug: str | None = None,
         connection_id: str = "hightouch_default",
         api_version: str = "v3",
         synchronous: bool = True,
@@ -51,9 +51,7 @@ class HightouchTriggerSyncOperator(BaseOperator):
         self.hightouch_conn_id = connection_id
         self.api_version = api_version
         if not sync_id and not sync_slug:
-            raise ValueError(
-                "One of sync_id or sync_slug must be provided to trigger a sync"
-            )
+            raise ValueError("One of sync_id or sync_slug must be provided to trigger a sync")
         self.sync_id = sync_id
         self.sync_slug = sync_slug
         self.error_on_warning = error_on_warning
@@ -72,12 +70,8 @@ class HightouchTriggerSyncOperator(BaseOperator):
             self.log.info("Start async request to run a sync.")
             request_id = hook.start_sync(self.sync_id, self.sync_slug)
             sync = self.sync_id or self.sync_slug
-            self.log.info(
-                "Successfully created request %s to start sync: %s", request_id, sync
-            )
-            return hook.get_sync_run_details(
-                sync_id=self.sync_id, sync_request_id=request_id
-            )
+            self.log.info("Successfully created request %s to start sync: %s", request_id, sync)
+            return hook.get_sync_run_details(sync_id=self.sync_id, sync_request_id=request_id)
 
         self.log.info("Start synchronous request to run a sync.")
         hightouch_output = hook.sync_and_poll(

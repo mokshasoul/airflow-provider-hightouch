@@ -2,14 +2,14 @@
 This module contains utility functions for the Hightouch provider.
 """
 
-from typing import Type
+from __future__ import annotations
 
 from dateutil import parser
 
 from airflow_provider_hightouch.types import SyncRunParsedOutput
 
 
-def parse_sync_run_details(sync_run_details) -> Type[SyncRunParsedOutput]:
+def parse_sync_run_details(sync_run_details: dict) -> type[SyncRunParsedOutput]:
     """
     Parses the sync run details and returns an instance of SyncRunParsedOutput.
 

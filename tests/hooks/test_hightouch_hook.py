@@ -9,12 +9,11 @@ Run test:
 
 """
 
+import json
 import unittest
 from unittest import mock
-import json
 
 import requests_mock
-
 from airflow_provider_hightouch.hooks.hightouch import HightouchHook
 
 
