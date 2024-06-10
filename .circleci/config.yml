@@ -7,8 +7,8 @@ jobs:
       - checkout
       - run:
           command: |
-           python3 -m pip install --upgrade build
-           make build
+            python3 -m pip install --upgrade build
+            make build
       - persist_to_workspace:
           root: ~/project
           paths:
@@ -19,7 +19,7 @@ jobs:
     docker:
       - image: cimg/python:3.9.2
     steps:
-      - checkout  # checkout source code to working directory
+      - checkout # checkout source code to working directory
       - attach_workspace:
           at: ~/project/
       - run:
@@ -30,7 +30,7 @@ jobs:
             echo -e "password = $PYPY_TEST_TOKEN" >> ~/.pypirc
       - run:
           name: deploy to pypi-test
-          command: |  # create whl, install twine and publish to Test PyPI
+          command: | # create whl, install twine and publish to Test PyPI
             python3 -m pip install --upgrade build
             make build
             pip3 install twine
@@ -40,7 +40,7 @@ jobs:
     docker:
       - image: cimg/python:3.9.2
     steps:
-      - checkout  # checkout source code to working directory
+      - checkout # checkout source code to working directory
       - attach_workspace:
           at: ~/project/
       - run:
@@ -51,7 +51,7 @@ jobs:
             echo -e "password = $PYPY_TOKEN" >> ~/.pypirc
             python3 airflow_provider_hightouch/version.py
       - run:
-          command: |  # create whl, install twine and publish to PyPI
+          command: | # create whl, install twine and publish to PyPI
             python3 -m pip install --upgrade build twine
             make build
             pip3 install twine

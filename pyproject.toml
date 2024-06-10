@@ -27,7 +27,6 @@ test = ["pytest >= 8.2.0", "requests_mock >= 1.12.1"]
 dev = [
     "airflow-provider-hightouch[test]",
     "ruff>=0.4.4",
-    "pylint>=3.2.0",
     "mypy>=1.10.0",
     "pendulum==2.0.0",
     "apache-airflow==2.6.3",
@@ -50,6 +49,8 @@ python = "3.11"
 python = "3.11"
 features = ["dev"]
 
+[tool.hatch.build.targets.sdist]
+packages = ["src/airflow_provider_hightouch"]
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.
@@ -82,7 +83,7 @@ exclude = [
     "venv",
 ]
 
-line-length = 100
+line-length = 88
 indent-width = 4
 
 # Assume Python 3.11
@@ -446,7 +447,7 @@ indent-after-paren = 4
 indent-string = "    "
 
 # Maximum number of characters on a single line.
-max-line-length = 100
+max-line-length = 88
 
 # Maximum number of lines in a module.
 max-module-lines = 99999

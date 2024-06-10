@@ -18,7 +18,9 @@ class HightouchLink(BaseOperatorLink):
     name = "Hightouch Sync"
     operators = [HightouchTriggerSyncOperator]
 
-    def get_link(self, operator: HightouchTriggerSyncOperator, *, ti_key: TaskInstanceKey) -> str:
+    def get_link(
+        self, operator: HightouchTriggerSyncOperator, *, ti_key: TaskInstanceKey
+    ) -> str:
         sync_id = operator.sync_id
         return f"https://app.hightouch.io/{sync_id}"
 
