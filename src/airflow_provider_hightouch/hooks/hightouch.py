@@ -4,7 +4,7 @@ Hightouch Hook for Airflow
 
 import datetime
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any
 from urllib.parse import urljoin
 
 from airflow.exceptions import AirflowException
@@ -58,16 +58,16 @@ class HightouchHook(HttpHook):
         self,
         method: str,
         endpoint: str,
-        data: Optional[Dict[str, Any]] = None,
+        data: dict[str, Any] | None = None,
     ):
         """Creates and sends a request to the desired Hightouch API endpoint
         Args:
-            method (str): The http method use for this request (e.g. "GET", "POST").
-            endpoint (str): The Hightouch API endpoint to send this request to.
-            params (Optional(dict): Query parameters to pass to the API endpoint
-            body (Optional(dict): Body parameters to pass to the API endpoint
+            method: The http method use for this request (e.g. "GET", "POST").
+            endpoint: The Hightouch API endpoint to send this request to.
+            params: Query parameters to pass to the API endpoint
+            body: Body parameters to pass to the API endpoint
         Returns:
-            Dict[str, Any]: Parsed json data from the response to this request
+            dict[str, Any]: Parsed json data from the response to this request
         """
 
         conn = self.get_connection(self.hightouch_conn_id)
@@ -90,7 +90,7 @@ class HightouchHook(HttpHook):
                     headers=headers,
                 )
                 resp_dict = response.json()
-                return resp_dict["data"] if "data" in resp_dict else resp_dict
+                return resp_dict.get("data", resp_dict)
             except AirflowException as e:
                 self.log.error("Request to Hightouch API failed: %s", e)
                 if num_retries == self._request_max_retries:
@@ -100,9 +100,7 @@ class HightouchHook(HttpHook):
 
         raise AirflowException("Exceeded max number of retries.")
 
-    def get_sync_run_details(
-        self, sync_id: str, sync_request_id: str
-    ) -> List[Dict[str, Any]]:
+    def get_sync_run_details(self, sync_id: str, sync_request_id: str) -> list[dict[str, Any]]:
         """Get details about a given sync run from the Hightouch API.
         Args:
             sync_id (str): The Hightouch Sync ID.
@@ -111,11 +109,10 @@ class HightouchHook(HttpHook):
             Dict[str, Any]: Parsed json data from the response
         """
         params = {"runId": sync_request_id}
-        return self.make_request(
-            method="GET", endpoint=f"syncs/{sync_id}/runs", data=params
-        )
 
-    def get_sync_details(self, sync_id: str) -> Dict[str, Any]:
+        return self.make_request(method="GET", endpoint=f"syncs/{sync_id}/runs", data=params)
+
+    def get_sync_details(self, sync_id: str) -> dict[str, Any]:
         """Get details about a given sync from the Hightouch API.
         Args:
             sync_id (str): The Hightouch Sync ID.
@@ -131,13 +128,13 @@ class HightouchHook(HttpHook):
         Returns:
             Dict[str, Any]: Parsed json data from the response
         """
-        return self.make_request(
-            method="GET", endpoint="syncs", data={"slug": sync_slug}
-        )[0]["id"]
+        r = self.make_request(method="GET", endpoint="syncs", data={"slug": sync_slug})
+        if not r or not isinstance(r, list):
+            raise AirflowException(f"Sync with slug {sync_slug} not found.")
 
-    def start_sync(
-        self, sync_id: Optional[str] = None, sync_slug: Optional[str] = None
-    ) -> str:
+        return r[0].get("id", None)
+
+    def start_sync(self, sync_id: str | None = None, sync_slug: str | None = None) -> str:
         """Trigger a sync and initiate a sync run
         Args:
             sync_id (str): The Hightouch Sync ID.
@@ -163,7 +160,7 @@ class HightouchHook(HttpHook):
         sync_request_id: str,
         fail_on_warning: bool = False,
         poll_interval: float = DEFAULT_POLL_INTERVAL,
-        poll_timeout: Optional[float] = None,
+        poll_timeout: float | None = None,
     ) -> HightouchOutput:
         """Poll for the completion of a sync
         Args:
@@ -208,10 +205,8 @@ class HightouchHook(HttpHook):
                     sync_id,
                     sync_request_id,
                 )
-            if (
-                poll_timeout
-                and datetime.datetime.now()
-                > poll_start + datetime.timedelta(seconds=poll_timeout)
+            if poll_timeout and datetime.datetime.now() > poll_start + datetime.timedelta(
+                seconds=poll_timeout
             ):
                 raise AirflowException(
                     f"Sync {sync_id} for request: {sync_request_id}' time out after "
@@ -225,11 +220,11 @@ class HightouchHook(HttpHook):
 
     def sync_and_poll(
         self,
-        sync_id: Optional[str] = None,
-        sync_slug: Optional[str] = None,
+        sync_id: str | None = None,
+        sync_slug: str | None = None,
         fail_on_warning: bool = False,
         poll_interval: float = DEFAULT_POLL_INTERVAL,
-        poll_timeout: Optional[float] = None,
+        poll_timeout: float | None = None,
     ) -> HightouchOutput:
         """
         Initialize a sync run for the given sync id, and polls until it completes
@@ -244,19 +239,17 @@ class HightouchHook(HttpHook):
             :py:class:`~HightouchOutput`:
                 Object containing details about the Hightouch sync run
         """
+        if sync_slug is None and sync_id is None:
+            raise AirflowException("Sync ID or Sync Slug are required")
+
         sync_request_id = self.start_sync(sync_id, sync_slug)
 
-        if not sync_id:
-            assert sync_slug
-            sync_id = sync_id or self.get_sync_from_slug(sync_slug=sync_slug)
+        sync_id = sync_id or self.get_sync_from_slug(sync_slug=sync_slug)
 
-        assert sync_id or sync_slug
-        ht_output = self.poll_sync(
+        return self.poll_sync(
             sync_id,
             sync_request_id,
             fail_on_warning=fail_on_warning,
             poll_interval=poll_interval,
             poll_timeout=poll_timeout,
         )
-
-        return ht_output

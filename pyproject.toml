@@ -27,7 +27,6 @@ test = ["pytest >= 8.2.0", "requests_mock >= 1.12.1"]
 dev = [
     "airflow-provider-hightouch[test]",
     "ruff>=0.4.4",
-    "pylint>=3.2.0",
     "mypy>=1.10.0",
     "pendulum==2.0.0",
     "apache-airflow==2.6.3",
@@ -50,6 +49,8 @@ python = "3.11"
 python = "3.11"
 features = ["dev"]
 
+[tool.hatch.build.targets.sdist]
+packages = ["src/airflow_provider_hightouch"]
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.
