@@ -6,8 +6,6 @@ You will need Airflow installed. One way to do this is to use
 [pyenv](https://github.com/pyenv/pyenv) and
 [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv) to create a virtual environment.
 
-
-
 ```shell
 mkdir -p ~/airflow
 cd ~/airflow
