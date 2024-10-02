@@ -28,6 +28,8 @@ with DAG(
         task_id="run_sync", sync_id=5, synchronous=True, error_on_warning=True
     )
 
-    sync_sensor = HightouchSyncRunSensor(task_id="sync_sensor", sync_run_id="123456", sync_id="123")
+    sync_sensor = HightouchSyncRunSensor(
+        task_id="sync_sensor", sync_run_id="123456", sync_id="123"
+    )
 
     latest_only >> sync_sensor >> [run_sync, run_async]
