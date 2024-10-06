@@ -1,5 +1,7 @@
 """Airflow provider for Hightouch."""
 
+from __future__ import annotations
+
 from airflow_provider_hightouch.version import __version__
 
 

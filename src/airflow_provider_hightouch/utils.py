@@ -1,6 +1,4 @@
-"""
-This module contains utility functions for the Hightouch provider.
-"""
+"""This module contains utility functions for the Hightouch provider."""
 
 from __future__ import annotations
 
@@ -11,7 +9,7 @@ from airflow_provider_hightouch.types import SyncRunParsedOutput
 
 def parse_sync_run_details(sync_run_details: dict) -> type[SyncRunParsedOutput]:
     """
-    Parses the sync run details and returns an instance of SyncRunParsedOutput.
+    Parse the sync run details and return an instance of SyncRunParsedOutput.
 
     Args:
         sync_run_details (dict): The sync run details to be parsed.

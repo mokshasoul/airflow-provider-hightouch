@@ -2,16 +2,23 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+from airflow.configuration import conf
+from airflow.exceptions import AirflowException
 from airflow.models.baseoperator import BaseOperator
 
 from airflow_provider_hightouch.hooks.hightouch import HightouchHook
+from airflow_provider_hightouch.triggers.hightouch import HightouchSyncTrigger
 from airflow_provider_hightouch.utils import parse_sync_run_details
+
+if TYPE_CHECKING:
+    from airflow.models import Context
 
 
 class HightouchTriggerSyncOperator(BaseOperator):
     """
-    This operator triggers a run for a specified Sync in Hightouch via the
-    Hightouch API.
+    Triggers run for a specified Sync in Hightouch via the Hightouch API.
 
     .. seealso::
         For more information on how to use this operator, take a look at the guide:
@@ -45,54 +52,79 @@ class HightouchTriggerSyncOperator(BaseOperator):
         error_on_warning: bool = False,
         wait_seconds: float = 3,
         timeout: int = 3600,
+        deferrable: bool = conf.getboolean("operators", "default_deferrable", fallback=False),
         **kwargs,
     ):
         super().__init__(**kwargs)
         self.hightouch_conn_id = connection_id
         self.api_version = api_version
         if not sync_id and not sync_slug:
-            raise ValueError(
-                "One of sync_id or sync_slug must be provided to trigger a sync"
-            )
+            raise ValueError("One of sync_id or sync_slug must be provided to trigger a sync")
         self.sync_id = sync_id
         self.sync_slug = sync_slug
         self.error_on_warning = error_on_warning
         self.synchronous = synchronous
         self.wait_seconds = wait_seconds
         self.timeout = timeout
+        self.deferrable = deferrable
 
     def execute(self, context) -> str:
-        """Start a Hightouch Sync Run"""
+        """Start a Hightouch Sync Run."""
         hook = HightouchHook(
             hightouch_conn_id=self.hightouch_conn_id,
             api_version=self.api_version,
+            sync_id=self.sync_id,
+            sync_slug=self.sync_slug,
         )
+        sync = self.sync_id or self.sync_slug
+        self.sync_id = self.sync_id or hook.get_sync_from_slug(self.sync_slug)
+
+        request_id = hook.start_sync(self.sync_id, self.sync_slug)
+
+        self.log.info("Successfully created request %s to start sync: %s", request_id, sync)
+
+        sync_run_details = hook.get_sync_run_details(sync_id=self.sync_id, sync_request_id=request_id)
 
         if not self.synchronous:
-            self.log.info("Start async request to run a sync.")
-            request_id = hook.start_sync(self.sync_id, self.sync_slug)
-            sync = self.sync_id or self.sync_slug
-            self.log.info(
-                "Successfully created request %s to start sync: %s", request_id, sync
-            )
-            return hook.get_sync_run_details(
-                sync_id=self.sync_id, sync_request_id=request_id
+            return sync_run_details
+
+        if not self.deferrable:
+            self.log.info("Start synchronous request to run a sync.")
+            hightouch_output = hook.poll_sync(
+                sync_id=self.sync_id,
+                sync_request_id=request_id,
+                fail_on_warning=self.error_on_warning,
+                poll_interval=self.wait_seconds,
+                poll_timeout=self.timeout,
             )
 
-        self.log.info("Start synchronous request to run a sync.")
-        hightouch_output = hook.sync_and_poll(
-            self.sync_id,
-            self.sync_slug,
-            fail_on_warning=self.error_on_warning,
-            poll_interval=self.wait_seconds,
-            poll_timeout=self.timeout,
+            try:
+                parsed_result = parse_sync_run_details(sync_run_details=hightouch_output.sync_run_details)
+                self.log.debug("%s", dict(parsed_result))
+                self.log.info("Sync completed successfully")
+                return parsed_result.id
+            except Exception:
+                self.log.exception("Sync ran successfully but failed to parse output.")
+                self.log.exception(hightouch_output)
+                return None
+
+        self.defer(
+            trigger=HightouchSyncTrigger(
+                hightouch_conn_id=self.hightouch_conn_id,
+                api_version=self.api_version,
+                sync_id=self.sync_id,
+                sync_request_id=request_id,
+                timeout=self.timeout,
+                poll_interval=self.wait_seconds,
+            ),
+            timeout=self.timeout,
+            method_name="execute_complete",
         )
-        try:
-            parsed_result = parse_sync_run_details(hightouch_output.sync_run_details)
-            self.log.info("Sync completed successfully")
-            self.log.info(dict(parsed_result))
-            return parsed_result.id
-        except Exception:
-            self.log.exception("Sync ran successfully but failed to parse output.")
-            self.log.exception(hightouch_output)
-            return None
+
+    def execute_complete(self, context: Context, event: dict[str, any]) -> str:
+        if event["status"] == "completed":
+            return event.get("message", "No message")
+
+        raise AirflowException(
+            f"Sync run failed with status {event['status']}: {event.get('message', 'No message')}"
+        )

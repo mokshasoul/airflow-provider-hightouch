@@ -1,28 +1,30 @@
 """Custom types for the Hightouch provider."""
 
+from __future__ import annotations
+
 import datetime as dt
-from typing import Any, Dict, NamedTuple
+from typing import Any, NamedTuple
 
 
 class HightouchOutput(
     NamedTuple(
         "_HightouchOutput",
         [
-            ("sync_details", Dict[str, Any]),
-            ("sync_run_details", Dict[str, Any]),
+            ("sync_details", dict[str, Any]),
+            ("sync_run_details", dict[str, Any]),
         ],
     )
 ):
     """
-    Contains recorded information about the state of a Hightouch sync
-    after a sync completes.
+    Recorded information about state of a Hightouch sync after sync completion.
+
     Attributes:
         sync_details (Dict[str, Any]):
             https://hightouch.io/docs/api-reference/#operation/GetSync
         sync_run_details (Dict[str, Any]):
             https://hightouch.io/docs/api-reference/#operation/ListSyncRuns
         destination_details (Dict[str, Any]):
-            https://hightouch.io/docs/api-reference/#operation/GetDestination
+            https://hightouch.io/docs/api-reference/#operation/GetDestination.
     """
 
 
@@ -51,6 +53,4 @@ class SyncRunParsedOutput(
         ],
     )
 ):
-    """
-    Contains parsed information about a Hightouch sync run.
-    """
+    """Parsed information about a Hightouch sync run."""

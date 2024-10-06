@@ -1,5 +1,7 @@
 """Constants for the Hightouch API."""
 
+from __future__ import annotations
+
 SUCCESS = "success"
 WARNING = "warning"
 CANCELLED = "cancelled"

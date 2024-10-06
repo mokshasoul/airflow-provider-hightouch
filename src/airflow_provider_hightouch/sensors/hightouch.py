@@ -1,6 +1,4 @@
-"""
-Sensors for hightouch
-"""
+"""# Sensors for hightouch."""
 
 from __future__ import annotations
 
@@ -21,6 +19,8 @@ if TYPE_CHECKING:
 
 class HightouchSyncRunSensor(BaseSensorOperator):
     """
+    Monitor a specific sync run in Hightouch.
+
     This operator monitors a specific sync run in Hightouch via the
     Hightouch API.
 
@@ -67,7 +67,7 @@ class HightouchSyncRunSensor(BaseSensorOperator):
         run: SyncRunParsedOutput = parse_sync_run_details(sync_run_details)
 
         if run.status in TERMINAL_STATUSES:
-            self.log.info(f"Sync request status: {run.status}.")
+            self.log.info("Sync request status: %s.", run.status)
             if run.error:
                 self.log.info("Sync Request Error: %s", run.error)
 

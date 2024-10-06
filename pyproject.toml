@@ -11,25 +11,25 @@ readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.11"
 authors = [
-    { name = "Hightouch", email = "pedram@hightouch.io" },
-    { name = "Charis-Nicolas Georgiou", email = "charis@elegantsolutions.eu" },
+  { name = "Hightouch", email = "pedram@hightouch.io" },
+  { name = "Charis-Nicolas Georgiou", email = "charis@elegantsolutions.eu" },
 ]
 classifiers = [
-    "Development Status :: 4 - Beta",
-    "License :: OSI Approved :: Apache Software License",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
+  "Development Status :: 4 - Beta",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
 ]
-dependencies = ["apache-airflow >= 2.6.3", "requests"]
+dependencies = ["apache-airflow >= 2.7.3", "requests"]
 
 [project.optional-dependencies]
 test = ["pytest >= 8.2.0", "requests_mock >= 1.12.1"]
 dev = [
-    "airflow-provider-hightouch[test]",
-    "ruff>=0.4.4",
-    "mypy>=1.10.0",
-    "pendulum==2.0.0",
-    "apache-airflow==2.6.3",
+  "airflow-provider-hightouch[test]",
+  "ruff>=0.4.4",
+  "mypy>=1.10.0",
+  "pendulum==2.0.0",
+  "apache-airflow==2.7.3",
 ]
 
 [project.entry-points.apache_airflow_provider]
@@ -55,68 +55,128 @@ packages = ["src/airflow_provider_hightouch"]
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.
 exclude = [
-    ".bzr",
-    ".direnv",
-    ".eggs",
-    ".git",
-    ".git-rewrite",
-    ".hg",
-    ".ipynb_checkpoints",
-    ".mypy_cache",
-    ".nox",
-    ".pants.d",
-    ".pyenv",
-    ".pytest_cache",
-    ".pytype",
-    ".ruff_cache",
-    ".svn",
-    ".tox",
-    ".venv",
-    ".vscode",
-    "__pypackages__",
-    "_build",
-    "buck-out",
-    "build",
-    "dist",
-    "node_modules",
-    "site-packages",
-    "venv",
+  ".bzr",
+  ".direnv",
+  ".eggs",
+  ".git",
+  ".git-rewrite",
+  ".hg",
+  ".ipynb_checkpoints",
+  ".mypy_cache",
+  ".nox",
+  ".pants.d",
+  ".pyenv",
+  ".pytest_cache",
+  ".pytype",
+  ".ruff_cache",
+  ".svn",
+  ".tox",
+  ".venv",
+  ".vscode",
+  "__pypackages__",
+  "_build",
+  "buck-out",
+  "build",
+  "dist",
+  "node_modules",
+  "site-packages",
+  "venv",
 ]
 
-line-length = 88
+line-length = 110
 indent-width = 4
 
 # Assume Python 3.11
 target-version = "py311"
 
-[tool.ruff.lint]
-# Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
-# Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
-# McCabe complexity (`C901`) by default.
-select = [
-    # pycodestyle
-    "E",
-    # Pyflakes
-    "F",
-    # pyupgrade
-    "UP",
-    # flake8-bugbear
-    "B",
-    # flake8-simplify
-    "SIM",
-    # isort
-    "I",
-]
-ignore = []
-
-# Allow fix for all enabled rules (when `--fix`) is provided.
-fixable = ["ALL"]
-unfixable = []
-
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
+[tool.ruff.lint]
+extend-select = [
+  # Enable entire ruff rule section
+  "I",     # Missing required import (auto-fixable)
+  "UP",    # Pyupgrade
+  "ASYNC", # subset of flake8-async rules
+  "ISC",   # Checks for implicit literal string concatenation (auto-fixable)
+  "TC",    # Rules around TYPE_CHECKING blocks
+  "G",     # flake8-logging-format rules
+  "LOG",   # flake8-logging rules, most of them autofixable
+  "PT",    # flake8-pytest-style rules
+  "TID25", # flake8-tidy-imports rules
+  "E",     # pycodestyle rules
+  "W",     # pycodestyle rules
+  # Per rule enables
+  "RUF006", # Checks for asyncio dangling task
+  "RUF015", # Checks for unnecessary iterable allocation for first element
+  "RUF019", # Checks for unnecessary key check
+  "RUF100", # Unused noqa (auto-fixable)
+  # We ignore more pydocstyle than we enable, so be more selective at what we enable
+  "D1",
+  "D2",
+  "D213",   # Conflicts with D212.  Both can not be enabled.
+  "D3",
+  "D400",
+  "D401",
+  "D402",
+  "D403",
+  "D412",
+  "D419",
+  "PGH004", # Use specific rule codes when using noqa
+  "PGH005", # Invalid unittest.mock.Mock methods/attributes/properties
+  "S101",   # Checks use `assert` outside the test cases, test cases should be added into the exclusions
+  "SIM300", # Checks for conditions that position a constant on the left-hand side of the comparison
+  # operator, rather than the right-hand side.
+  "B004",   # Checks for use of hasattr(x, "__call__") and replaces it with callable(x)
+  "B006",   # Checks for uses of mutable objects as function argument defaults.
+  "B007",   # Checks for unused variables in the loop
+  "B017",   # Checks for pytest.raises context managers that catch Exception or BaseException.
+  "B019",   # Use of functools.lru_cache or functools.cache on methods can lead to memory leaks
+  "B028",   # No explicit stacklevel keyword argument found
+  "TRY002", # Prohibit use of `raise Exception`, use specific exceptions instead.
+]
+ignore = [
+  "D100",  # Unwanted; Docstring at the top of every file.
+  "D102",  # TODO: Missing docstring in public method
+  "D103",  # TODO: Missing docstring in public function
+  "D104",  # Unwanted; Docstring at the top of every `__init__.py` file.
+  "D105",  # Unwanted; See https://lists.apache.org/thread/8jbg1dd2lr2cfydtqbjxsd6pb6q2wkc3
+  "D107",  # Unwanted; Docstring in every constructor is unnecessary if the class has a docstring.
+  "D203",
+  "D212",  # Conflicts with D213.  Both can not be enabled.
+  "E731",  # Do not assign a lambda expression, use a def
+  "TC003", # Do not move imports from stdlib to TYPE_CHECKING block
+  "PT006", # Wrong type of names in @pytest.mark.parametrize
+  "PT007", # Wrong type of values in @pytest.mark.parametrize
+  "PT013", # silly rule prohibiting e.g. `from pytest import param`
+  "PT011", # pytest.raises() is too broad, set the match parameter
+  "PT019", # fixture without value is injected as parameter, use @pytest.mark.usefixtures instead
+  # Rules below explicitly set off which could overlap with Ruff's formatter
+  # as it recommended by https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
+  # Except ISC rules
+  "W191",
+  "E111",
+  "E114",
+  "E117",
+  "D206",
+  "D300",
+  "Q000",
+  "Q001",
+  "Q002",
+  "Q003",
+  "COM812",
+  "COM819",
+  "E501",     # Formatted code may exceed the line length, leading to line-too-long (E501) errors.
+  "ASYNC110", # TODO: Use `anyio.Event` instead of awaiting `anyio.sleep` in a `while` loop
+]
+unfixable = [
+  # PT022 replace empty `yield` to empty `return`. Might be fixed with a combination of PLR1711
+  # In addition, it can't do anything with invalid typing annotations, protected by mypy.
+  "PT022",
+]
+
 [tool.ruff.format]
+
 # Like Black, use double quotes for strings.
 quote-style = "double"
 
@@ -134,7 +194,7 @@ line-ending = "auto"
 #
 # This is currently disabled by default, but it is planned for this
 # to be opt-out in the future.
-docstring-code-format = false
+docstring-code-format = true
 
 # Set the line length limit used when formatting code snippets in
 # docstrings.
@@ -143,6 +203,25 @@ docstring-code-format = false
 # enabled.
 docstring-code-line-length = "dynamic"
 
+[tool.ruff.lint.isort]
+required-imports = ["from __future__ import annotations"]
+combine-as-imports = true
+
+
+section-order = [
+  "future",
+  "standard-library",
+  "third-party",
+  "first-party",
+  "local-folder",
+  "testing",
+]
+[tool.ruff.lint.flake8-tidy-imports]
+# Disallow all relative imports.
+ban-relative-imports = "all"
+# Ban certain modules from being imported at module level, instead requiring
+# that they're imported lazily (e.g., within a function definition).
+banned-module-level-imports = ["numpy", "pandas"]
 [tool.pylint.main]
 # Analyse import fallback blocks. This can be used to support both Python 2 and 3
 # compatible code, which means that the block might have code that exists only in
@@ -351,11 +430,11 @@ no-docstring-rgx = "(__.*__|main|test.*|.*test|.*Test)$"
 # to this list to register other decorators that produce valid properties. These
 # decorators are taken in consideration only for invalid-name.
 property-classes = [
-    "abc.abstractproperty",
-    "cached_property.cached_property",
-    "cached_property.threaded_cached_property",
-    "cached_property.cached_property_with_ttl",
-    "cached_property.threaded_cached_property_with_ttl",
+  "abc.abstractproperty",
+  "cached_property.cached_property",
+  "cached_property.threaded_cached_property",
+  "cached_property.cached_property_with_ttl",
+  "cached_property.threaded_cached_property_with_ttl",
 ]
 
 # Regular expression matching correct type alias names. If left empty, type alias
@@ -507,11 +586,11 @@ logging-modules = ["logging", "absl.logging", "tensorflow.io.logging"]
 # Only show warnings with the listed confidence levels. Leave empty to show all.
 # Valid levels: HIGH, CONTROL_FLOW, INFERENCE, INFERENCE_FAILURE, UNDEFINED.
 confidence = [
-    "HIGH",
-    "CONTROL_FLOW",
-    "INFERENCE",
-    "INFERENCE_FAILURE",
-    "UNDEFINED",
+  "HIGH",
+  "CONTROL_FLOW",
+  "INFERENCE",
+  "INFERENCE_FAILURE",
+  "UNDEFINED",
 ]
 
 # Disable the message, report, category or checker with the given id(s). You can
@@ -524,94 +603,94 @@ confidence = [
 # no Warning level messages displayed, use "--disable=all --enable=classes
 # --disable=W".
 disable = [
-    "raw-checker-failed",
-    "bad-inline-option",
-    "locally-disabled",
-    "file-ignored",
-    "suppressed-message",
-    "useless-suppression",
-    "deprecated-pragma",
-    "use-symbolic-message-instead",
-    "use-implicit-booleaness-not-comparison-to-string",
-    "use-implicit-booleaness-not-comparison-to-zero",
-    "useless-option-value",
-    "no-classmethod-decorator",
-    "no-staticmethod-decorator",
-    "useless-object-inheritance",
-    "property-with-parameters",
-    "cyclic-import",
-    "consider-using-from-import",
-    "consider-merging-isinstance",
-    "too-many-nested-blocks",
-    "simplifiable-if-statement",
-    "redefined-argument-from-local",
-    "no-else-return",
-    "consider-using-ternary",
-    "trailing-comma-tuple",
-    "stop-iteration-return",
-    "simplify-boolean-expression",
-    "inconsistent-return-statements",
-    "useless-return",
-    "consider-swap-variables",
-    "consider-using-join",
-    "consider-using-in",
-    "consider-using-get",
-    "chained-comparison",
-    "consider-using-dict-comprehension",
-    "consider-using-set-comprehension",
-    "simplifiable-if-expression",
-    "no-else-raise",
-    "unnecessary-comprehension",
-    "consider-using-sys-exit",
-    "no-else-break",
-    "no-else-continue",
-    "super-with-arguments",
-    "simplifiable-condition",
-    "condition-evals-to-constant",
-    "consider-using-generator",
-    "use-a-generator",
-    "consider-using-min-builtin",
-    "consider-using-max-builtin",
-    "consider-using-with",
-    "unnecessary-dict-index-lookup",
-    "use-list-literal",
-    "use-dict-literal",
-    "unnecessary-list-index-lookup",
-    "use-yield-from",
-    "duplicate-code",
-    "too-many-ancestors",
-    "too-many-instance-attributes",
-    "too-few-public-methods",
-    "too-many-public-methods",
-    "too-many-return-statements",
-    "too-many-branches",
-    "too-many-arguments",
-    "too-many-locals",
-    "too-many-statements",
-    "too-many-boolean-expressions",
-    "too-many-positional",
-    "literal-comparison",
-    "comparison-with-itself",
-    "comparison-of-constants",
-    "abstract-method",
-    "arguments-differ",
-    "attribute-defined-outside-init",
-    "unknown-option-value",
-    "c-extension-no-member",
-    "consider-using-enumerate",
-    "fixme",
-    "global-statement",
-    "implicit-str-concat",
-    "import-error",
-    "import-self",
-    "missing-function-docstring",
-    "no-member",
-    "no-name-in-module",
-    "signature-differs",
-    "trailing-newlines",
-    "unnecessary-pass",
-    "useless-else-on-loop",
-    "wrong-import-order",
+  "raw-checker-failed",
+  "bad-inline-option",
+  "locally-disabled",
+  "file-ignored",
+  "suppressed-message",
+  "useless-suppression",
+  "deprecated-pragma",
+  "use-symbolic-message-instead",
+  "use-implicit-booleaness-not-comparison-to-string",
+  "use-implicit-booleaness-not-comparison-to-zero",
+  "useless-option-value",
+  "no-classmethod-decorator",
+  "no-staticmethod-decorator",
+  "useless-object-inheritance",
+  "property-with-parameters",
+  "cyclic-import",
+  "consider-using-from-import",
+  "consider-merging-isinstance",
+  "too-many-nested-blocks",
+  "simplifiable-if-statement",
+  "redefined-argument-from-local",
+  "no-else-return",
+  "consider-using-ternary",
+  "trailing-comma-tuple",
+  "stop-iteration-return",
+  "simplify-boolean-expression",
+  "inconsistent-return-statements",
+  "useless-return",
+  "consider-swap-variables",
+  "consider-using-join",
+  "consider-using-in",
+  "consider-using-get",
+  "chained-comparison",
+  "consider-using-dict-comprehension",
+  "consider-using-set-comprehension",
+  "simplifiable-if-expression",
+  "no-else-raise",
+  "unnecessary-comprehension",
+  "consider-using-sys-exit",
+  "no-else-break",
+  "no-else-continue",
+  "super-with-arguments",
+  "simplifiable-condition",
+  "condition-evals-to-constant",
+  "consider-using-generator",
+  "use-a-generator",
+  "consider-using-min-builtin",
+  "consider-using-max-builtin",
+  "consider-using-with",
+  "unnecessary-dict-index-lookup",
+  "use-list-literal",
+  "use-dict-literal",
+  "unnecessary-list-index-lookup",
+  "use-yield-from",
+  "duplicate-code",
+  "too-many-ancestors",
+  "too-many-instance-attributes",
+  "too-few-public-methods",
+  "too-many-public-methods",
+  "too-many-return-statements",
+  "too-many-branches",
+  "too-many-arguments",
+  "too-many-locals",
+  "too-many-statements",
+  "too-many-boolean-expressions",
+  "too-many-positional",
+  "literal-comparison",
+  "comparison-with-itself",
+  "comparison-of-constants",
+  "abstract-method",
+  "arguments-differ",
+  "attribute-defined-outside-init",
+  "unknown-option-value",
+  "c-extension-no-member",
+  "consider-using-enumerate",
+  "fixme",
+  "global-statement",
+  "implicit-str-concat",
+  "import-error",
+  "import-self",
+  "missing-function-docstring",
+  "no-member",
+  "no-name-in-module",
+  "signature-differs",
+  "trailing-newlines",
+  "unnecessary-pass",
+  "useless-else-on-loop",
+  "wrong-import-order",
 ]
 
 # Enable the message, report, category or checker with the given id(s). You can
@@ -624,14 +703,14 @@ disable = [
 # List of qualified names (i.e., library.method) which require a timeout
 # parameter e.g. 'requests.api.get,requests.api.post'
 timeout-methods = [
-    "requests.api.delete",
-    "requests.api.get",
-    "requests.api.head",
-    "requests.api.options",
-    "requests.api.patch",
-    "requests.api.post",
-    "requests.api.put",
-    "requests.api.request",
+  "requests.api.delete",
+  "requests.api.get",
+  "requests.api.head",
+  "requests.api.options",
+  "requests.api.patch",
+  "requests.api.post",
+  "requests.api.put",
+  "requests.api.request",
 ]
 
 [tool.pylint.miscellaneous]
@@ -725,8 +804,8 @@ check-quote-consistency = true
 # contextlib.contextmanager. Add to this list to register other decorators that
 # produce valid context managers.
 contextmanager-decorators = [
-    "contextlib.contextmanager",
-    "contextlib2.contextmanager",
+  "contextlib.contextmanager",
+  "contextlib2.contextmanager",
 ]
 
 # List of members which are set dynamically and missed by pylint inference
@@ -750,10 +829,10 @@ ignore-on-opaque-inference = true
 
 # List of symbolic message names to ignore for Mixin members.
 ignored-checks-for-mixins = [
-    "no-member",
-    "not-async-context-manager",
-    "not-context-manager",
-    "attribute-defined-outside-init",
+  "no-member",
+  "not-async-context-manager",
+  "not-context-manager",
+  "attribute-defined-outside-init",
 ]
 
 # List of class names for which member attributes should not be checked (useful
@@ -807,9 +886,9 @@ ignored-argument-names = "_.*|^ignored_|^unused_"
 # List of qualified module names which can have objects that can redefine
 # builtins.
 redefining-builtins-modules = [
-    "six",
-    "six.moves",
-    "past.builtins",
-    "future.builtins",
-    "functools",
+  "six",
+  "six.moves",
+  "past.builtins",
+  "future.builtins",
+  "functools",
 ]

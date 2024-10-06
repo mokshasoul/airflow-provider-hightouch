@@ -8,12 +8,14 @@ Run test:
     python3 -m unittest tests.hooks.test_hightouch_hook.TestHightouchHook
 
 """
+from __future__ import annotations
 
 import json
 import unittest
 from unittest import mock
 
 import requests_mock
+
 from airflow_provider_hightouch.hooks.hightouch import HightouchHook
 
 
@@ -64,9 +66,7 @@ def sync_details_payload():
     ),
 )
 class TestHightouchHook(unittest.TestCase):
-    """
-    Unit tests for the HightouchHook class.
-    """
+    """Unit tests for the HightouchHook class."""
 
     @requests_mock.mock()
     def test_hightouch_get_sync_status(self, requests_mock):

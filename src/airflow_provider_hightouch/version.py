@@ -1,6 +1,6 @@
-"""
-Version module for the package.
-"""
+"""Version module for the package."""
+
+from __future__ import annotations
 
 import os
 import sys
@@ -10,7 +10,7 @@ __version__ = "4.0.0"
 
 def validate_version():
     """
-    Validates the version of the package against the Git tag.
+    Validate the version of the package against the Git tag.
 
     Raises:
         SystemExit: If the Git tag does not match the version.
