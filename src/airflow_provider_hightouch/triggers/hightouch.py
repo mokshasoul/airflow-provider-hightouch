@@ -76,12 +76,10 @@ class HightouchSyncTrigger(HttpTrigger):
             while True:
                 if asyncio.get_event_loop().time() - start_time > self.timeout:
                     yield TriggerEvent({"status": "timeout"})
-                    return
 
                 status_response = self.check_sync_status()
                 if status_response.get("status", FAILED) in TERMINAL_STATUSES:
                     yield TriggerEvent({"status": "completed", "status_response": status_response})
-                    return
 
                 await asyncio.sleep(self.poll_interval)
 

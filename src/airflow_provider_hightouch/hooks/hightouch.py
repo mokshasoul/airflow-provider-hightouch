@@ -273,7 +273,7 @@ class HightouchAsyncHook(HttpAsyncHook):
             **kwargs,
         )
 
-    async def get_headers(self) -> str:
+    async def get_headers(self) -> dict[str, str]:
         connection = await sync_to_async(self.get_connection(self.hightouch_conn_id))
         headers = {
             "Authorization": f"Bearer {connection.password}",
